@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+     <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="icon" href="logo.png">
+
+
+    <meta charset="UTF-8">
+    <title>Login - Solo personal médico</title>
+</head>
+<body onload="limpiarCampos(); mostrarErrorDesdeURL();">
+
+<h1 style="text-align: center; font-size: 40px;">📋 Acceso al sistema de citas</h1>
+<p style="text-align: center; font-size: 24px;">Por favor, ingresa tus credenciales para acceder.</p>
+
+
+<div id="mensajeError" style="display: none; width: 90%; margin: 20px auto; padding: 20px; background-color: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; border-radius: 8px; position: relative; font-size: 22px;">
+    <span id="textoError"></span>
+    <span onclick="cerrarError()" style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-weight: bold; font-size: 24px;">&times;</span>
+</div>
+
+
+<div style="width: 800px; height: auto; margin: 0 auto; border: 2px solid #ccc; padding: 50px 40px; text-align: center; border-radius: 15px; box-shadow: 0 0 20px #aaa;">
+    <form id="loginForm" action="procesar_login.php" method="POST" autocomplete="off">
+        <!-- Usuario -->
+        <label for="usuario" style="display: block; margin-bottom: 15px; font-size: 26px;">👤 Usuario:</label>
+        <input type="text" id="usuario" name="usuario" required autocomplete="off"
+               style="width: 94%; padding: 20px; margin-bottom: 30px; border-radius: 6px; border: 1px solid #ccc; font-size: 22px;"><br>
+        <!-- Contraseña -->
+        <label for="contraseña" style="display: block; margin-bottom: 15px; font-size: 26px;">🔒 Contraseña:</label>
+        <input type="password" id="contraseña" name="contraseña" required autocomplete="off"
+               style="width: 94%; padding: 20px; margin-bottom: 30px; border-radius: 6px; border: 1px solid #ccc; font-size: 22px;">
+        
+        <div style="text-align: left; margin: 15px 0 30px;">
+            <input type="checkbox" id="mostrarPass" onclick="togglePassword()" style="transform: scale(1.5); margin-right: 10px;">
+            <label for="mostrarPass" style="font-size: 22px;">Mostrar contraseña</label>
+        </div>
+        <button type="submit" style="padding: 20px 40px; cursor: pointer; border: none; background: #4CAF50; color: white; border-radius: 8px; font-size: 24px;">✅ Iniciar sesión</button>
+    </form>
+
+    <!-- Botón de Salir -->
+    <button onclick="salir()" style="padding: 20px 40px; cursor: pointer; border: none; background: #f44336; color: white; border-radius: 8px; margin-top: 50px; font-size: 22px;">🚪 Salir</button>
+</div>
+
+
+<script>
+    function togglePassword() {
+        var input = document.getElementById("contraseña");
+        input.type = input.type === "password" ? "text" : "password";
+    }
+    function salir() {
+        window.location.href = 'index.html'; 
+    }
+    function limpiarCampos() {
+        document.getElementById("usuario").value = "";
+        document.getElementById("contraseña").value = "";
+        document.getElementById("mostrarPass").checked = false;
+    }
+    function cerrarError() {
+        document.getElementById('mensajeError').style.display = 'none';
+    }
+    function mostrarErrorDesdeURL() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('error')) {
+            const error = params.get('error');
+            document.getElementById('textoError').innerText = error;
+            document.getElementById('mensajeError').style.display = 'block';
+        }
+    }
+</script>
+</body>
+</html>

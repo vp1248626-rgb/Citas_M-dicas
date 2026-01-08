@@ -1,0 +1,86 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background: url('/clinica/Images/imagen_1.jpg') no-repeat center center fixed; /* Imagen de fondo */
+    background-size: cover;
+    color: #00796b;
+    text-align: center;
+    padding-top: 100px;
+    position: relative;
+}
+
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.3); 
+    z-index: 0;
+}
+
+.contenido {
+    position: relative;
+    z-index: 1; 
+}
+
+h1 {
+    color: #f2f531;
+    margin-bottom: 50px;
+    font-size: 55px;
+    font-weight: bold;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.botones {
+    display: flex;
+    justify-content: center;
+    gap: 90px;
+    flex-wrap: wrap;
+}
+
+.boton {
+    padding: 18px 36px;
+    font-size: 22px;
+    background-color: #00bfae;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.boton:hover {
+    background-color: #009e8e;
+    transform: translateY(-5px);
+}
+
+.boton:active {
+    transform: translateY(2px);
+}
+
+/* Imagen decorativa inferior */
+.imagen-abajo {
+    margin-top: 80px;
+    padding: 30px 10px;
+}
+
+.imagen-abajo img {
+    max-width: 65%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}

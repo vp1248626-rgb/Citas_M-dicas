@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+     <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="icon" href="logo.png">
+    
+    <meta charset="UTF-8">
+    <title>Registro de Cita</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #b1ddeb;
+            color: #000000;
+            text-align: center;
+            padding: 30px;
+            margin: 0;
+        }
+        h1 {
+            color: #a7a42d;
+            font-size: 36px;
+            font-weight: bold;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .container {
+            background: #ffffff;
+            padding: 70px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 95%;
+            max-width: 850px;
+            margin: auto;
+            margin-top: 50px;
+            min-height: 1200px;
+            box-sizing: border-box;
+        }
+        .container form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        input, select, button {
+            padding: 14px;
+            margin: 10px 0;
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        input[type="date"] {
+            cursor: pointer;
+        }
+        button {
+            background-color: #54cff5;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        button:hover {
+            background-color: #008aca;
+        }
+        .horarios {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .horario {
+            padding: 12px 25px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #3ec400;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 18px;
+            margin: 5px;
+            font-weight: bold;
+        }
+        .horario:hover {
+            background-color: #15d8a7;
+            transform: scale(1.05);
+        }
+        .horario.selected {
+            background-color: #ff0505 !important;
+            font-weight: bold;
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            text-align: center;
+            width: 300px;
+        }
+        .modal p {
+            font-size: 16px;
+            color: #00796b;
+        }
+        .modal .close-btn {
+            color: #d32f2f;
+            font-size: 20px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+        .curp-link a {
+            color: red;
+            text-decoration: none;
+        }
+        .curp-link a:hover {
+            text-decoration: underline;
+        }
+        .salir-btn {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: #f44336;
+            color: white;
+            border-radius: 5px;
+            margin-top: 40px;
+        }
+    </style>
+    <script>
+        let horarioSeleccionado = null;
+        function generarHorarios() {
+            const horariosContainer = document.getElementById("horarios");
+            horariosContainer.innerHTML = "";
+            const fechaSeleccionada = document.getElementById("fecha").value;
+            if (!fechaSeleccionada) return;
+            const horarios = [];
+            for (let hora = 8; hora < 12; hora++) {
+                horarios.push(`${hora}:00`);
+                horarios.push(`${hora}:30`);
+            }
+            horarios.forEach(hora => {
+                const div = document.createElement("div");
+                div.className = "horario";
+                div.textContent = hora;
+                div.onclick = () => seleccionarHorario(div, hora);
+                horariosContainer.appendChild(div);
+            });
+        }
+        function seleccionarHorario(elemento, hora) {
+            if (horarioSeleccionado) {
+                horarioSeleccionado.classList.remove("selected");
+            }
+            elemento.classList.add("selected");
+            horarioSeleccionado = elemento;
+            document.getElementById("hora").value = hora;
+        }
+        function mostrarModal() {
+            const modal = document.getElementById("modal");
+            modal.style.display = "block";
+        }
+        function cerrarModal() {
+            const modal = document.getElementById("modal");
+            modal.style.display = "none";
+        }
+        function mostrarModalOcupado() {
+            const modal = document.getElementById("modalOcupado");
+            modal.style.display = "block";
+        }
+        function cerrarModalOcupado() {
+            const modal = document.getElementById("modalOcupado");
+            modal.style.display = "none";
+        }
+        function salir() {
+            window.location.href = 'index.html';
+        }
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('success') === 'true') {
+                mostrarModal();
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("formularioCita");
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+                fetch("guardar_cita.php", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(res => res.text())
+                .then(response => {
+                    if (response.includes("ocupado")) {
+                        mostrarModalOcupado();
+                    } else if (response.includes("success")) {
+                        mostrarModal();
+                    } else {
+                        alert("⚠️ Hubo un error al guardar la cita.");
+                    }
+                })
+                .catch(() => {
+                    alert("⚠️ No se pudo conectar con el servidor.");
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div>
+        <h1>¿Qué día deseas agendar tu cita?</h1>
+    </div>
+    <div class="container">
+        <form id="formularioCita">
+            <label for="curp">CURP:</label>
+            <input type="text" id="curp" name="curp" placeholder="Ingrese su CURP" required>
+            <div class="curp-link">
+                <a href="https://www.gob.mx/curp/" target="_blank">¿No conoces tu CURP?</a>
+            </div>
+            <label for="nombre_completo">Nombre Completo:</label>
+            <input type="text" id="nombre_completo" name="nombre_completo" placeholder="Nombre completo" required>
+
+            <!-- NUEVO CAMPO AGREGADO -->
+            <label for="numero_expediente">Número de expediente:</label>
+            <input type="text" id="numero_expediente" name="numero_expediente" placeholder="Ejemplo: EXP12345" style="width: 40%;" required>
+            <!-- FIN NUEVO CAMPO -->
+
+            <label for="fecha">Selecciona la fecha para tu cita:</label>
+            <input type="date" id="fecha" name="fecha" required onchange="generarHorarios()">
+            <h3>Horarios Disponibles:</h3>
+            <div id="horarios" class="horarios"></div>
+            <input type="hidden" id="hora" name="hora" required>
+            <label for="lugar_procedencia">Lugar de Procedencia:</label>
+            <select id="lugar_procedencia" name="lugar_procedencia" required>
+                <option value="" disabled selected hidden>Seleccione una opción</option>
+                <option value="Congregación Palmar">Congregación Palmar</option>
+                <option value="Ejido Palmar">Ejido Palmar</option>
+                <option value="El Aguacate">El Aguacate</option>
+                <option value="San Carlos">San Carlos</option>
+                <option value="San Pablo">San Pablo</option>
+                <option value="Totomoxtle">Totomoxtle</option>
+                <option value="Venustiano Carranza">Venustiano Carranza</option>
+            </select>
+            <button type="submit">Guardar Cita</button>
+
+            <p style="color: red; font-size: 16px; margin: 0; font-weight: bold;">
+                ¿Olvidaste o quieres recordar tu cita?
+            </p>
+
+            <button onclick="window.location.href='buscar_cita.php'" type="button" style="background-color: #06cb16; margin-top: 10px;">🔍 Buscar Cita</button>
+        </form>
+        <button onclick="salir()" class="salir-btn">🚪 Salir</button>
+    </div>
+    <div id="modal" class="modal">
+        <span class="close-btn" onclick="cerrarModal()">×</span>
+        <p>✅ Su cita se registró correctamente, nos vemos prónto</p>
+    </div>
+    <div id="modalOcupado" class="modal">
+        <span class="close-btn" onclick="cerrarModalOcupado()">×</span>
+        <p>⚠️ El horario seleccionado ya está ocupado. Por favor, elige otro.</p>
+    </div>
+</body>
+</html>

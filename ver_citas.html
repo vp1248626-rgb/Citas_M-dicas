@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Citas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .no-citas {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+            color: #555;
+        }
+        .pendiente {
+            color: orange;
+            font-weight: bold;
+        }
+        .completo {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Ver Citas Agendadas</h1>
+</header>
+<div class="container">
+    <?php
+    // Configuración de la base de datos
+    $servidor = "localhost";
+    $usuario = "clinica_user";
+    $password = "Clinica2025";
+    $base_de_datos = "CLINICA";
+    // Crear conexión
+    $conexion = new mysqli($servidor, $usuario, $password, $base_de_datos);
+    // Verificar conexión
+    if ($conexion->connect_error) {
+        die("Conexión fallida: " . $conexion->connect_error);
+    }
+    // Consulta para obtener las citas con el estado
+    $sql = "SELECT nombre_completo, fecha, hora, lugar_procedencia, estado FROM citas ORDER BY fecha DESC, hora DESC";
+    $resultado = $conexion->query($sql);
+    if ($resultado->num_rows > 0) {
+        echo "<table>";
+        echo "<tr><th>Nombre Completo</th><th>Fecha</th><th>Hora</th><th>Lugar de Procedencia</th><th>Estado</th></tr>";
+        
+        while ($row = $resultado->fetch_assoc()) {
+            echo "<tr>";
+            echo "<td>" . htmlspecialchars($row['nombre_completo']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['fecha']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['hora']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['lugar_procedencia']) . "</td>";
+            
+            // Mostrar el estado con color
+            if ($row['estado'] == 'pendiente') {
+                echo "<td class='pendiente'>Pendiente</td>";
+            } else {
+                echo "<td class='completo'>Completo</td>";
+            }
+            echo "</tr>";
+        }
+        echo "</table>";
+    } else {
+        echo "<div class='no-citas'>No hay citas registradas.</div>";
+    }
+    // Cerrar conexión
+    $conexion->close();
+    ?>
+</div>
+</body>
+</html>
